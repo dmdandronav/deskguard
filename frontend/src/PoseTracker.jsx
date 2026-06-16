@@ -2,19 +2,16 @@ import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } f
 import { PoseLandmarker, FilesetResolver, DrawingUtils } from "@mediapipe/tasks-vision";
 
 /**
- * EXERCISES — change this to match your hackathon idea.
+ * EXERCISES — DeskGuard tracks the ear-shoulder-hip (posture) angle only.
  *
- * Each entry defines 3 landmark indices (a-b-c) and the angle is measured
- * AT joint b. BlazePose landmark indices you'll commonly use:
- *   11/12 = shoulders, 13/14 = elbows, 15/16 = wrists,
- *   23/24 = hips, 25/26 = knees, 27/28 = ankles
+ * BlazePose landmark indices:
+ *   7 = left ear, 11 = left shoulder, 23 = left hip
  *
- * Ideas: swap this for a HandLandmarker to build a sign-language /
- * gesture-control project instead of a fitness one — same overall structure.
+ * The angle is measured AT the shoulder joint (landmark 11), giving the
+ * ear-shoulder-hip alignment. Upright posture → close to 180°; slouching → below 160°.
  */
 const EXERCISES = {
-  squat: { label: "Squat (knee angle)", points: [23, 25, 27] }, // hip-knee-ankle
-  bicepCurl: { label: "Bicep curl (elbow angle)", points: [11, 13, 15] }, // shoulder-elbow-wrist
+  posture: { label: "Posture (neck-shoulder-hip)", points: [7, 11, 23] },
 };
 
 function angleBetween(a, b, c) {
@@ -28,7 +25,7 @@ function angleBetween(a, b, c) {
   return (Math.acos(cos) * 180) / Math.PI;
 }
 
-const PoseTracker = forwardRef(function PoseTracker({ exercise = "squat" }, ref) {
+const PoseTracker = forwardRef(function PoseTracker({ exercise = "posture" }, ref) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const landmarkerRef = useRef(null);
@@ -37,7 +34,7 @@ const PoseTracker = forwardRef(function PoseTracker({ exercise = "squat" }, ref)
   const [liveAngle, setLiveAngle] = useState(null);
 
   // Expose a snapshot of recent angle data to the parent for the
-  // "Get AI Feedback" call.
+  // "Get AI Feedback" call and ambient mode checks.
   useImperativeHandle(ref, () => ({
     getSummary() {
       const angles = historyRef.current.map((p) => p.angle).filter((a) => a != null);
@@ -130,24 +127,24 @@ const PoseTracker = forwardRef(function PoseTracker({ exercise = "squat" }, ref)
   }, [exercise]);
 
   return (
-    <div className="relative w-full max-w-xl mx-auto rounded-2xl overflow-hidden border border-[var(--color-line)] bg-[var(--color-panel)]">
+    <div className="relative w-full max-w-xl mx-auto rounded-2xl overflow-hidden border border-[var(--color-line)] bg-[var(--color-muted)]">
       <video ref={videoRef} className="hidden" playsInline muted />
       <canvas ref={canvasRef} className="w-full h-auto block scale-x-[-1]" />
 
       {status === "loading" && (
-        <div className="absolute inset-0 flex items-center justify-center text-sm text-[var(--color-text)]/70">
-          <span className="w-2 h-2 rounded-full bg-[var(--color-accent)] pulse-soft mr-2" />
-          loading pose model…
+        <div className="absolute inset-0 flex items-center justify-center text-sm text-[var(--color-ink)]/70">
+          <span className="w-2 h-2 rounded-full bg-[var(--color-accent)] animate-pulse mr-2" />
+          Loading pose model…
         </div>
       )}
       {status === "error" && (
-        <div className="absolute inset-0 flex items-center justify-center text-sm text-[var(--color-warn)] px-6 text-center">
+        <div className="absolute inset-0 flex items-center justify-center text-sm text-red-500 px-6 text-center">
           Couldn't access the camera. Check browser permissions and reload.
         </div>
       )}
 
       {liveAngle != null && (
-        <div className="absolute top-3 left-3 bg-black/50 rounded-lg px-3 py-1 text-xs font-[var(--font-display)]">
+        <div className="absolute top-3 left-3 bg-black/50 text-white rounded-lg px-3 py-1 text-xs font-mono">
           {EXERCISES[exercise].label}: {liveAngle.toFixed(0)}°
         </div>
       )}

@@ -1,27 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Space Grotesk", sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
-
-  --color-bg: #0e1110;
-  --color-panel: #171b1a;
-  --color-line: #2a302e;
-  --color-text: #e7ece9;
-  --color-accent: #7cffb2;  /* skeleton / live indicator */
-  --color-warn: #ff6b5c;    /* form-correction highlight */
+  --color-surface: oklch(97% 0.01 200);
+  --color-ink: oklch(18% 0.02 200);
+  --color-accent: oklch(55% 0.18 200);
+  --color-muted: oklch(91% 0.02 200);
+  --color-line: oklch(86% 0.02 200);
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Fraunces", serif;
 }
 
-body {
-  font-family: var(--font-body);
-  background-color: var(--color-bg);
-  color: var(--color-text);
-}
-
-@keyframes pulse-soft {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}
-.pulse-soft {
-  animation: pulse-soft 1.2s ease-in-out infinite;
-}
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500&display=swap");
