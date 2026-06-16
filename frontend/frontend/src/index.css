@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  --color-bg: #0e1110;
+  --color-panel: #171b1a;
+  --color-line: #2a302e;
+  --color-text: #e7ece9;
+  --color-accent: #7cffb2;  /* skeleton / live indicator */
+  --color-warn: #ff6b5c;    /* form-correction highlight */
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+.pulse-soft {
+  animation: pulse-soft 1.2s ease-in-out infinite;
+}
